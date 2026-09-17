@@ -1,0 +1,19 @@
+name: ci
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The Dockerfile runs the unit tests during the build (isolation mode
+      # `none`). Bubblewrap is not exercised here: GitHub-hosted runners do
+      # not allow a new network namespace to configure loopback, so
+      # `--unshare-net` cannot work on them. The service probes bubblewrap
+      # at boot and exits if it cannot build the sandbox.
+      - run: docker build -t pdf-agent-sandbox .

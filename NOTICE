@@ -1,0 +1,19 @@
+pdf-agent-sandbox
+Copyright (c) 2026 Everbility Pty Ltd
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your
+option) any later version. See LICENSE.
+
+It is distributed as a container image that includes PyMuPDF
+(https://pymupdf.io), which is licensed under the GNU AGPL v3 by Artifex
+Software, Inc. That is why this program is AGPL: anyone who runs it as a
+network service must offer its complete corresponding source, which is
+published at https://github.com/Everbility/pdf-agent-sandbox.
+
+Other bundled Python libraries and their licences: pypdf (BSD-3-Clause),
+pdfplumber (MIT), pypdfium2 (Apache-2.0 / BSD-3-Clause), reportlab
+(BSD-3-Clause), Pillow (MIT-CMU), FastAPI (MIT), uvicorn (BSD-3-Clause).
+System packages: bubblewrap (LGPL-2.0+), poppler-utils (GPL-2.0+), qpdf
+(Apache-2.0), ripgrep (MIT).
