@@ -69,4 +69,5 @@ GNU Affero General Public License v3.0 or later; see `LICENSE` and
 ## Maintainers
 
 Development happens in a private repository; each commit here is a sync
-from it and carries the short hash of the source commit.
+from it and carries the short hash of the source commit. This mirror does
+not accept pull requests or issues, and its workflow runs only on demand.

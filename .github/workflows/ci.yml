@@ -1,9 +1,9 @@
 name: ci
+# Manual only. This repository is a published mirror: nothing runs on push,
+# on pull requests or on a schedule, so no workflow can be triggered by an
+# outside contribution. Run it from the Actions tab when checking a sync.
 on:
-  push:
-    branches: [main]
-    tags: ["v*"]
-  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
