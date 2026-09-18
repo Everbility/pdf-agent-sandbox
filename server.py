@@ -40,6 +40,10 @@ WORK_ROOT = Path(
 ).resolve()
 SKILLS_DIR = os.getenv("PDF_SHELL_SKILLS_DIR", "/skills")
 ISOLATION = os.getenv("PDF_SHELL_ISOLATION", "bwrap").strip().lower()
+# Mode `none` runs commands with plain access to everything the container
+# can see, including every other workspace under the work root. It needs a
+# second, explicit acknowledgement so it cannot be reached by a typo.
+ALLOW_UNISOLATED = os.getenv("PDF_SHELL_ALLOW_UNISOLATED", "") == "1"
 DEFAULT_TIMEOUT_MS = int(os.getenv("PDF_SHELL_DEFAULT_TIMEOUT_MS", "120000"))
 MAX_TIMEOUT_MS = int(os.getenv("PDF_SHELL_MAX_TIMEOUT_MS", "300000"))
 MAX_OUTPUT_BYTES = int(os.getenv("PDF_SHELL_MAX_OUTPUT_BYTES", "200000"))
@@ -94,6 +98,12 @@ def _bwrap_available() -> bool:
 
 def resolve_isolation(requested: str) -> str:
     if requested == "none":
+        if not ALLOW_UNISOLATED:
+            raise SystemExit(
+                "PDF_SHELL_ISOLATION=none gives commands access to every "
+                "workspace; set PDF_SHELL_ALLOW_UNISOLATED=1 as well, and only "
+                "on a single-user development host"
+            )
         logger.warning(
             json.dumps(
                 {
@@ -166,10 +176,10 @@ def build_argv(mode: str, workdir: Path, command: str) -> list[str]:
 
 
 def _truncate(data: bytes) -> str:
-    text = data.decode("utf-8", errors="replace")
+    text = data[:MAX_OUTPUT_BYTES].decode("utf-8", errors="replace")
     if len(data) <= MAX_OUTPUT_BYTES:
         return text
-    return text[:MAX_OUTPUT_BYTES] + f"\n[output truncated at {MAX_OUTPUT_BYTES} bytes]"
+    return text + f"\n[output truncated at {MAX_OUTPUT_BYTES} bytes]"
 
 
 async def run_command(
@@ -253,6 +263,3 @@ def create_app(*, isolation: str | None = None) -> FastAPI:
         return result
 
     return app
-
-
-app = create_app() if os.getenv("PDF_SHELL_SKIP_APP") != "1" else None

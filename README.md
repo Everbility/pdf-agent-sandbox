@@ -31,7 +31,7 @@ working directory. `GET /healthz` reports the isolation mode.
 | `PDF_SHELL_INTERNAL_SECRET` | required | Shared secret callers must present |
 | `PDF_SHELL_WORK_ROOT` | `/var/lib/pdf-sandbox/workspaces` | Root holding `<tenant>/<session>` workspaces |
 | `PDF_SHELL_SKILLS_DIR` | `/skills` | Optional directory of helper files for the agent, bound read-only at `/skills` when it exists |
-| `PDF_SHELL_ISOLATION` | `bwrap` | `bwrap`, or `none` for development hosts without namespaces (logged loudly) |
+| `PDF_SHELL_ISOLATION` | `bwrap` | `bwrap`, or `none` for a single-user development host without namespaces; `none` also requires `PDF_SHELL_ALLOW_UNISOLATED=1` and gives commands access to every workspace |
 | `PDF_SHELL_DEFAULT_TIMEOUT_MS` / `PDF_SHELL_MAX_TIMEOUT_MS` | 120000 / 300000 | Per-command timeout and its cap |
 | `PDF_SHELL_MAX_OUTPUT_BYTES` | 200000 | stdout/stderr cap per command |
 

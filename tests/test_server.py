@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 os.environ.setdefault("PDF_SHELL_INTERNAL_SECRET", "test")
-os.environ["PDF_SHELL_SKIP_APP"] = "1"
+os.environ["PDF_SHELL_ALLOW_UNISOLATED"] = "1"
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import server
@@ -87,3 +87,9 @@ def test_bwrap_argv_mounts_only_the_workspace(tmp_path):
     assert argv[-3:] == ["/bin/bash", "-c", "python3 fill.py"]
     binds = [argv[i + 1] for i, item in enumerate(argv) if item == "--bind"]
     assert binds == [str(workdir)], "exactly one writable bind"
+
+
+def test_unisolated_mode_needs_an_explicit_opt_in(monkeypatch):
+    monkeypatch.setattr(server, "ALLOW_UNISOLATED", False)
+    with pytest.raises(SystemExit, match="PDF_SHELL_ALLOW_UNISOLATED"):
+        server.resolve_isolation("none")
