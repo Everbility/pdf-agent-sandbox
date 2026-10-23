@@ -22,15 +22,19 @@ RUN groupadd -r -g 1000 sandbox && useradd -r -u 1000 -g sandbox -m sandbox && \
     mkdir -p /var/lib/pdf-sandbox/workspaces /pdf /skills && \
     chown -R sandbox:sandbox /var/lib/pdf-sandbox /pdf
 
+COPY --from=ghcr.io/astral-sh/uv:0.13.4@sha256:9f130421e930bfbdc563c00740466603f8723158e90297d07957c2294640262b /uv /uvx /usr/local/bin/
+ENV UV_PROJECT_ENVIRONMENT=/app/.venv
+ENV PATH="/app/.venv/bin:${PATH}"
+
 WORKDIR /app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --no-cache
 
 COPY server.py ./
 COPY tests ./tests
-RUN pip install --no-cache-dir pytest==8.4.2 httpx==0.28.1 && \
-    PDF_SHELL_INTERNAL_SECRET=test python -m pytest -q tests && \
-    pip uninstall -y pytest httpx >/dev/null
+RUN uv sync --locked --no-cache && \
+    PDF_SHELL_INTERNAL_SECRET=test uv run --locked python -m pytest -q tests && \
+    uv sync --locked --no-dev --no-cache
 
 USER sandbox
 EXPOSE 3003
