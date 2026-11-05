@@ -3,7 +3,10 @@
 # one workspace directory mounted at /pdf.
 FROM python:3.11-slim-trixie
 
-RUN apt-get update && \
+# CVE-2026-109518: approved 2026-11-05 urgent-security cooldown exception.
+RUN apt-get -o Acquire::Retries=0 update && \
+    apt-get -o Acquire::Retries=0 install -y --no-install-recommends --only-upgrade apt && \
+    dpkg --compare-versions "$(dpkg-query -W -f='${Version}' apt)" ge '3.0.4' && \
     apt-get install -y --no-install-recommends \
         bubblewrap poppler-utils qpdf ripgrep binutils fonts-dejavu-core ca-certificates && \
     dpkg --compare-versions "$(dpkg-query -W -f='${Version}' ca-certificates)" ge '20250419+deb13u1' && \
